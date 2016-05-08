@@ -139,14 +139,14 @@ to change the settings, use:
  To exclude the clients,  we set:
 
      awful.key({modkey}, "e", function()
-             revelation(rule={class="conky"}, is_excluded=true)
+             revelation({rule={class="conky"}, is_excluded=true})
              end)
 
  To set only collect clients from current tag
 
      awful.key({modkey}, "e", function()
-                 revelation(rule={class="conky"}, is_excluded=true, 
-                curr_tag_only=true)
+                 revelation({rule={class="conky"}, is_excluded=true, 
+                curr_tag_only=true})
                  end)
 
 ## Credits
