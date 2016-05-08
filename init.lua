@@ -36,6 +36,20 @@ local capi         = {
 -- It seems there is not way to pass err handling function into the delayed_call()
 local delayed_call = (type(timer) ~= 'table' and  require("gears.timer").delayed_call)
 
+local view_only_func
+local toggle_tag_func
+local jump_to_func
+
+if type(capi.client.view_only) == 'function' then
+    view_only_func = function (tag) tag:view_only() end
+    toggle_tag_func = function (t, c) c:toggle_tag(t) end
+    jump_to_func = function(c) c:jump_to() end
+else
+    view_only_func = function (tag) awful.tag.viewonly(tag) end
+    toggle_tag_func = function (t, c) awful.client.toggletag(t, c) end
+    jump_to_func = function(c) awful.client.jumpto(c) end
+end
+
 
 local hintbox = {} -- Table of letter wiboxes with characters as the keys
 local hintindex = {} -- Table of visible clients with the hint letter as the keys
@@ -171,7 +185,7 @@ function revelation.expose(args)
             match_clients(rule, capi.client.get(scr), t[scr], is_excluded)
         end
 
-        awful.tag.viewonly(t[scr])
+       view_only_func(t[scr])
     end
 
     if type(delayed_call) == 'function' then
@@ -283,7 +297,7 @@ function revelation.expose_callback(t, zt, clientlist)
             c = hintindex[key_char]
             if not zoomed and c ~= nil then
                 --debuginfo(c.screen)
-                awful.tag.viewonly(zt[c.screen])
+                view_only_func(zt[c.screen])
                 awful.client.toggletag(zt[c.screen], c)
                 zoomedClient = c
                 key_char_zoomed = key_char
@@ -351,7 +365,13 @@ function revelation.expose_callback(t, zt, clientlist)
     local pressedMiddle = false
 
     capi.mousegrabber.run(function(mouse)
-        local c = awful.mouse.client_under_pointer()
+        local c
+
+        if type(capi.client.view_only) == 'function' then
+            c = awful.mouse.client_under_pointer()
+        else
+            c = mouse.client_under_pointer()
+        end
         local key_char = awful.util.table.hasitem(hintindex, c) 
         if mouse.buttons[1] == true then
             selectfn(restore, t, zt)(c)
@@ -392,7 +412,7 @@ function revelation.expose_callback(t, zt, clientlist)
             end
         elseif mouse.buttons[3] == true then
             if not zoomed and c ~= nil then
-                awful.tag.viewonly(zt[c.screen])
+                view_only_func(zt[c.screen])
                 awful.client.toggletag(zt[c.screen], c)
                 if key_char ~= nil then 
                     hintbox_display_toggle(key_char, false)
