@@ -40,7 +40,8 @@ local view_only_func
 local toggle_tag_func
 local jump_to_func
 
-if type(capi.client.view_only) == 'function' then
+
+if type(awful.client.object.toggle_tag) == 'function' then
     view_only_func = function (tag) tag:view_only() end
     toggle_tag_func = function (t, c) c:toggle_tag(t) end
     jump_to_func = function(c) c:jump_to() end
@@ -116,7 +117,7 @@ local function selectfn(restore, t, zt)
                 c.minimized = false
             end
 
-            awful.client.jumpto(c)
+            jump_to_func(c)
         end
     end
 end
@@ -148,7 +149,7 @@ local function match_clients(rule, _clients, t, is_excluded)
                 c[k] = v
 
             end
-            awful.client.toggletag(t, c)
+            toggle_tag_func(t, c)
             if c:isvisible() then 
                 table.insert(clients, c)
             end
@@ -280,7 +281,6 @@ function revelation.expose_callback(t, zt, clientlist)
             hintindex[char] = thisclient
             hintbox_pos(char)
             hintbox[char].visible = true
-            hintbox[char].screen = thisclient.screen
         end
     end
 
@@ -298,7 +298,7 @@ function revelation.expose_callback(t, zt, clientlist)
             if not zoomed and c ~= nil then
                 --debuginfo(c.screen)
                 view_only_func(zt[c.screen])
-                awful.client.toggletag(zt[c.screen], c)
+                toggle_tag_func(zt[c.screen], c)
                 zoomedClient = c
                 key_char_zoomed = key_char
                 zoomed = true
@@ -312,7 +312,7 @@ function revelation.expose_callback(t, zt, clientlist)
 
             elseif zoomedClient ~= nil then
                 awful.tag.history.restore(zoomedClient.screen)
-                awful.client.toggletag(zt[zoomedClient.screen], zoomedClient)
+                toggle_tag_func(zt[zoomedClient.screen], zoomedClient)
                 hintbox_display_toggle(key_char_zoomed,  true)
                 if type(delayed_call) == 'function' then 
                     capi.awesome.emit_signal("refresh")
@@ -341,7 +341,7 @@ function revelation.expose_callback(t, zt, clientlist)
         if key == "Escape" then
             if zoomedClient ~= nil then 
                 awful.tag.history.restore(zoomedClient.screen)
-                awful.client.toggletag(zt[zoomedClient.screen], zoomedClient)
+                toggle_tag_func(zt[zoomedClient.screen], zoomedClient)
                 hintbox_display_toggle(string.lower(key),  true)
                 if type(delayed_call) == 'function' then 
                     capi.awesome.emit_signal("refresh")
@@ -367,10 +367,10 @@ function revelation.expose_callback(t, zt, clientlist)
     capi.mousegrabber.run(function(mouse)
         local c
 
-        if type(capi.client.view_only) == 'function' then
+        if type(tag.view_only) == 'function' then
             c = awful.mouse.client_under_pointer()
         else
-            c = mouse.client_under_pointer()
+            c = mouse.current_client
         end
         local key_char = awful.util.table.hasitem(hintindex, c) 
         if mouse.buttons[1] == true then
@@ -387,7 +387,7 @@ function revelation.expose_callback(t, zt, clientlist)
             --
             if zoomed == true and zoomedClient ~=nil then 
                 awful.tag.history.restore(zoomedClient.screen)
-                awful.client.toggletag(zt[zoomedClient.screen], zoomedClient)
+                toggle_tag_func(zt[zoomedClient.screen], zoomedClient)
             end
             c:kill()
             hintbox[key_char].visible = false
@@ -413,7 +413,7 @@ function revelation.expose_callback(t, zt, clientlist)
         elseif mouse.buttons[3] == true then
             if not zoomed and c ~= nil then
                 view_only_func(zt[c.screen])
-                awful.client.toggletag(zt[c.screen], c)
+                toggle_tag_func(zt[c.screen], c)
                 if key_char ~= nil then 
                     hintbox_display_toggle(key_char, false)
                     if type(delayed_call) == 'function' then 
@@ -426,7 +426,7 @@ function revelation.expose_callback(t, zt, clientlist)
                 key_char_zoomed = key_char
             elseif zoomedClient ~= nil then
                 awful.tag.history.restore(zoomedClient.screen)
-                awful.client.toggletag(zt[zoomedClient.screen], zoomedClient)
+                toggle_tag_func(zt[zoomedClient.screen], zoomedClient)
                 hintbox_display_toggle(key_char_zoomed, true)
                 if type(delayed_call) == 'function' then 
                     capi.awesome.emit_signal("refresh")
