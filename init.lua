@@ -34,6 +34,12 @@ local capi         = {
 
 -- disable for now. 
 -- It seems there is not way to pass err handling function into the delayed_call()
+
+local function debuginfo(message)
+    message = message or "No information available"
+    nid = naughty.notify({ text = tostring(message), timeout = 10 })
+end
+
 local delayed_call = (type(timer) ~= 'table' and  require("gears.timer").delayed_call)
 
 local view_only_func
@@ -41,7 +47,7 @@ local toggle_tag_func
 local jump_to_func
 
 
-if type(awful.client.object.toggle_tag) == 'function' then
+if type(awful.client.object) == 'table' then
     view_only_func = function (tag) tag:view_only() end
     toggle_tag_func = function (t, c) c:toggle_tag(t) end
     jump_to_func = function(c) c:jump_to() end
@@ -95,10 +101,6 @@ local revelation = {
 }
 
 
-local function debuginfo(message)
-    message = message or "No information available"
-    nid = naughty.notify({ text = tostring(message), timeout = 10 })
-end
 
 -- Executed when user selects a client from expose view.
 --
