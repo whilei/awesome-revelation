@@ -119,8 +119,7 @@ local function selectfn(restore, t, zt)
                 c.minimized = false
             end
 
-            --jump_to_func(c)
-            awful.client.jumpto(c) 
+            jump_to_func(c)
         end
     end
 end
@@ -370,7 +369,7 @@ function revelation.expose_callback(t, zt, clientlist)
     capi.mousegrabber.run(function(mouse)
         local c
 
-        if type(tag.view_only) == 'function' then
+    if type(awful.client.object) == 'table' then
             c = awful.mouse.client_under_pointer()
         else
             c = capi.mouse.current_client
