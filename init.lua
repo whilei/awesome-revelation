@@ -153,8 +153,7 @@ local function match_clients(rule, _clients, t, is_excluded)
             end
             toggle_tag_func(t, c)
             if c:isvisible() then 
-                table.insert(clients, c)
-            end
+                table.insert(clients, c) end
         end
     end
 
@@ -370,9 +369,9 @@ function revelation.expose_callback(t, zt, clientlist)
         local c
 
     if type(awful.client.object) == 'table' then
-            c = awful.mouse.client_under_pointer()
-        else
             c = capi.mouse.current_client
+        else
+            c = awful.mouse.client_under_pointer()
         end
         local key_char = awful.util.table.hasitem(hintindex, c) 
         if mouse.buttons[1] == true then
