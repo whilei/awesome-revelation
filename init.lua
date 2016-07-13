@@ -119,7 +119,8 @@ local function selectfn(restore, t, zt)
                 c.minimized = false
             end
 
-            jump_to_func(c)
+            --jump_to_func(c)
+            awful.client.jumpto(c) 
         end
     end
 end
@@ -372,16 +373,20 @@ function revelation.expose_callback(t, zt, clientlist)
         if type(tag.view_only) == 'function' then
             c = awful.mouse.client_under_pointer()
         else
-            c = mouse.current_client
+            c = capi.mouse.current_client
         end
         local key_char = awful.util.table.hasitem(hintindex, c) 
         if mouse.buttons[1] == true then
-            selectfn(restore, t, zt)(c)
+            if c ~= nil then
+                selectfn(restore, t, zt)(c)
 
-            for i,j in pairs(hintindex) do
-                hintbox[i].visible = false
+                for i,j in pairs(hintindex) do
+                    hintbox[i].visible = false
+                end
+                return false
+            else
+                return true
             end
-            return false
         elseif mouse.buttons[2] == true and pressedMiddle == false and c ~= nil then
             -- is true whenever the button is down.
             pressedMiddle = true
