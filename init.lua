@@ -153,7 +153,8 @@ local function match_clients(rule, _clients, t, is_excluded)
             end
             toggle_tag_func(t, c)
             if c:isvisible() then 
-                table.insert(clients, c) end
+                table.insert(clients, c) 
+            end
         end
     end
 
@@ -187,7 +188,7 @@ function revelation.expose(args)
             match_clients(rule, capi.client.get(scr), t[scr], is_excluded)
         end
 
-       view_only_func(t[scr])
+        view_only_func(t[scr])
     end
 
     if type(delayed_call) == 'function' then
