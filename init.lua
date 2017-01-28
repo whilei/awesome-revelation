@@ -367,6 +367,7 @@ function revelation.expose_callback(t, zt, clientlist)
 
     local pressedMiddle = false
 
+    local lastClient = nil
     capi.mousegrabber.run(function(mouse)
         local c
 
@@ -374,6 +375,20 @@ function revelation.expose_callback(t, zt, clientlist)
             c = capi.mouse.current_client
         else
             c = awful.mouse.client_under_pointer()
+        end
+        if c then
+          lastClient = c
+        else
+          local current_wibox = capi.mouse.current_wibox
+          if current_wibox then
+            for i = 1, #revelation.charorder do
+              local char = revelation.charorder:sub(i,i)
+              if hintbox[char] == current_wibox then
+                c = lastClient
+                break
+              end
+            end
+          end
         end
         local key_char = awful.util.table.hasitem(hintindex, c) 
         if mouse.buttons[1] == true then
