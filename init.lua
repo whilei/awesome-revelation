@@ -344,7 +344,7 @@ function revelation.expose_callback(t, zt, clientlist)
         if key == "Escape" then
             if zoomedClient ~= nil then 
                 awful.tag.history.restore(zoomedClient.screen)
-                awful.client.toggletag(zt[zoomedClient.screen], zoomedClient)
+                toggle_tag_func(zt[zoomedClient.screen.index or zoomedClient.screen], zoomedClient)
                 hintbox_display_toggle(string.lower(key),  true)
                 if type(delayed_call) == 'function' then 
                     capi.awesome.emit_signal("refresh")
