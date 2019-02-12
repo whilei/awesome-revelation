@@ -80,6 +80,7 @@ local revelation = {
         any   = aw_rules.match_any
     },
     property_to_watch={
+        maximized            = false,
         minimized            = false,
         fullscreen           = false,
         maximized_horizontal = false,
