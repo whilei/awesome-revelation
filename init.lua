@@ -68,7 +68,7 @@ local revelation = {
     -- Name of expose tag.
     tag_name = "Revelation",
 
-    charorder = "jkluiopyhnmfdsatgvcewqzx1234567890",
+    charorder = "tesawdfbcgqkzx*niohurlyj",
 
     -- Match function can be defined by user.
     -- Must accept a `rule` and `client` and return `boolean`.
@@ -89,6 +89,7 @@ local revelation = {
         ontop                = false,
         above                = false,
         below                = false,
+        hidden               = false,
     },
     tags_status = {},
     is_excluded = false,
@@ -121,6 +122,14 @@ local function selectfn(_, t, zt)
             end
 
             jump_to_func(c)
+
+            -- I want to raise and focus the Quake terminal if selected.
+            if not c:isvisible() then
+                c.hidden = false
+                capi.client.focus = c
+                c:raise()
+            end
+
         end
     end
 end
@@ -140,12 +149,16 @@ local function match_clients(rule, _clients, t, is_excluded)
             -- Store geometry before setting their tags
             clientData[c] = {}
             clientData[c]["geometry"] = c:geometry()
-            flt = awful.client.property.get(c, "floating")
-            if flt ~= nil then
+            --flt = awful.client.property.get(c, "floating")
+            flt = c.floating
+            --if flt ~= nil then
+            if flt then
                 clientData[c]["floating"] = flt
+                clientData[c]["geometry"] = c.floating_geometry
                 awful.client.property.set(c, "floating", false)
             end
 
+            clientData[c]["tags"] = c:tags()
 
             for k,v in pairs(revelation.property_to_watch) do
                 clientData[c][k] = c[k]
@@ -228,12 +241,14 @@ function revelation.restore(t, zt)
     
      for _, c in pairs(clients) do
             if clientData[c] then
+                c:tags(clientData[c]["tags"])
                 for k,v in pairs(clientData[c]) do
                     if v ~= nil then
                         if k== "geometry" then
                             c:geometry(v)
                         elseif k == "floating" then
                             awful.client.property.set(c, "floating", v)
+                            c.floating = v
                         else
                             c[k]=v
                         end
